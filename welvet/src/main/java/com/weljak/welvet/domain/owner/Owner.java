@@ -1,11 +1,14 @@
 package com.weljak.welvet.domain.owner;
 
+import com.weljak.welvet.domain.animal.Animal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -19,7 +22,7 @@ public class Owner {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "password", nullable = false)
@@ -28,8 +31,9 @@ public class Owner {
     @Column(name = "role", nullable = false)
     private String role;
 
-//    @OneToMany
-//    @JoinColumn(name = "animals_ids")
-//    private Set<Animal> animal;
+    @ManyToOne(targetEntity = Animal.class)
+    @JoinColumn(name = "owned_animals")
+    //@Column(name = "owned_animals")
+    private List<Animal> ownedAnimals;
 
 }

@@ -20,9 +20,9 @@ public class Animal {
     @Column(name = "id", nullable = false)
     private String id;
 
-    @ManyToOne(targetEntity = Owner.class,fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uuid", nullable = false)
-    private String uuid;
+    private Owner uuid;
 
     @Column(name = "type", nullable = false)
     private String type;
