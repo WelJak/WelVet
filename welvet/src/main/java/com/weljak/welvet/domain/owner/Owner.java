@@ -1,14 +1,14 @@
 package com.weljak.welvet.domain.owner;
 
-import com.weljak.welvet.domain.animal.Animal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @NoArgsConstructor
@@ -31,9 +31,9 @@ public class Owner {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @ManyToOne(targetEntity = Animal.class)
-    @JoinColumn(name = "owned_animals")
-    //@Column(name = "owned_animals")
-    private List<Animal> ownedAnimals;
+//    @ManyToOne(targetEntity = Animal.class)
+//    @JoinColumn(name = "owned_animals")
+//    //@Column(name = "owned_animals")
+//    private List<Animal> ownedAnimals;
 
 }

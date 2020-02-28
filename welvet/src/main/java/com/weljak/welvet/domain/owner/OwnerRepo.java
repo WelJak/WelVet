@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OwnerRepo extends JpaRepository<Owner, String> {
     Owner findByUuid(String uuid);
+
     boolean existsByUsername(String username);
+
     Owner findByUsername(String username);
 }

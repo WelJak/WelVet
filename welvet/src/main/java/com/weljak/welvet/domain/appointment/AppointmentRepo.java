@@ -8,7 +8,10 @@ import java.util.List;
 @Repository
 public interface AppointmentRepo extends JpaRepository<Appointment, String> {
     Appointment findByUuid(String uuid);
+
     List<Appointment> findAllByDate(String date);
+
     List<Appointment> findAllByStatus(String status);
+
     List<Appointment> findAllByType(String type);
 }

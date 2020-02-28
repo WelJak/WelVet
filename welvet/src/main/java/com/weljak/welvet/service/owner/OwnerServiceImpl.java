@@ -1,6 +1,7 @@
 package com.weljak.welvet.service.owner;
 
 import com.weljak.welvet.domain.owner.Owner;
+import com.weljak.welvet.domain.owner.OwnerAlreadyExistsException;
 import com.weljak.welvet.domain.owner.OwnerRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,9 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     public Owner createOwner(String username, String password) {
+        if (ownerRepo.existsByUsername(username) == true){
+            throw new OwnerAlreadyExistsException();
+        }
         Owner owner = Owner.builder()
                 .uuid(UUID.randomUUID().toString())
                 .username(username)
