@@ -15,7 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -46,7 +49,7 @@ public class OwnerController {
     public ResponseEntity<WelVetResponse> getCurrentOwnerDetails(@AuthenticationPrincipal CurrentOwner currentOwner) {
         try {
             log.info("Getting account details for user with uuid: {}", currentOwner.getOwnerUUID());
-            Owner owner = ownerService.findByUuid(currentOwner.getOwnerUUID());
+            Owner owner = ownerService.findOwnerByUuid(currentOwner.getOwnerUUID());
             FindOwnerResponse findOwnerResponse = new FindOwnerResponse(owner.getUuid(), owner.getUsername(), owner.getRole());
             ResponseEntity<WelVetResponse> response = WelVetResponseUtils.success(Endpoints.CURRENT_OWNER_DETAILS_ENDPOINT, findOwnerResponse, String.format("found owner with uuid: %s", currentOwner.getOwnerUUID()), HttpStatus.OK);
             return response;

@@ -9,13 +9,14 @@ primary key(uuid)
 );
 
 create table animals (
-id varchar(255) not null,
+animal_id varchar(255) not null,
 uuid varchar(255) not null,
+name varchar(255) not null,
 type varchar(255) not null,
 breed varchar(255) not null,
 age integer not null,
 treatment varchar(255),
-primary key(id)
+primary key(animal_id)
 );
 
 alter table animals add constraint animals_uuid_unq foreign key (uuid) references owner;
@@ -44,5 +45,5 @@ alter table appointment add constraint appointment_animals_uuid_unq foreign key 
 alter table appointment add constraint appointment_vet_uuid_unq foreign key (vet_id) references vet;
 
 insert into owner values ('testuuid','testusername','$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC','ROLE_USER');
-insert into animals values ('testanimal1', 'testuuid', 'testtype', 'testbreed', 1,'no treatment atm');
-insert into animals values ('testanimal2', 'testuuid', 'testtype2', 'testbreed2', 13,'no treatment atm');
+insert into animals values ('testanimal1', 'testuuid', 'testname1', 'testtype', 'testbreed', 1,'no treatment atm');
+insert into animals values ('testanimal2', 'testuuid', 'testname2', 'testtype2', 'testbreed2', 13,'no treatment atm');
