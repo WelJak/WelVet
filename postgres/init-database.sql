@@ -43,6 +43,6 @@ primary key(uuid)
 alter table appointment add constraint appointment_animals_uuid_unq foreign key (animal_id) references animals;
 alter table appointment add constraint appointment_vet_uuid_unq foreign key (vet_id) references vet;
 
-insert into owner values ('testuuid','testusername','testpassword','testrole');
+insert into owner values ('testuuid','testusername','$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC','ROLE_USER');
 insert into animals values ('testanimal1', 'testuuid', 'testtype', 'testbreed', 1,'no treatment atm');
 insert into animals values ('testanimal2', 'testuuid', 'testtype2', 'testbreed2', 13,'no treatment atm');
