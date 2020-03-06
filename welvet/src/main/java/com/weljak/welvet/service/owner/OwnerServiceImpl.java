@@ -21,6 +21,7 @@ public class OwnerServiceImpl implements OwnerService, UserDetailsService {
 
     @Override
     public Owner createOwner(String username, String password) {
+        log.info("creating owner with request username: {} and password: {}", username, password);
         if (ownerRepo.existsByUsername(username)) {
             throw new OwnerAlreadyExistsException();
         }
@@ -28,7 +29,7 @@ public class OwnerServiceImpl implements OwnerService, UserDetailsService {
                 .uuid(UUID.randomUUID().toString())
                 .username(username)
                 .password(password)
-                .role("USER_ROLE")
+                .role("ROLE_USER")
                 .build();
         ownerRepo.save(owner);
         return owner;
@@ -36,11 +37,13 @@ public class OwnerServiceImpl implements OwnerService, UserDetailsService {
 
     @Override
     public Owner findOwnerByUsername(String username) {
+        log.info("Fetching owner details with username: {}", username);
         return ownerRepo.findByUsername(username);
     }
 
     @Override
     public Owner findOwnerByUuid(String uuid) {
+        log.info("Fetching owner details with uuid: {}", uuid);
         return ownerRepo.findByUuid(uuid);
     }
 

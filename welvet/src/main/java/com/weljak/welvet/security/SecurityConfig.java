@@ -1,7 +1,6 @@
 package com.weljak.welvet.security;
 
 import com.weljak.welvet.domain.owner.OwnerRepo;
-import com.weljak.welvet.service.owner.OwnerService;
 import com.weljak.welvet.service.owner.OwnerServiceImpl;
 import com.weljak.welvet.webapi.Endpoints;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +17,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private  OwnerRepo ownerRepo;
+    private OwnerRepo ownerRepo;
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return new OwnerServiceImpl(ownerRepo);
     }
 
     @Override
-    protected void configure (AuthenticationManagerBuilder auth) throws Exception{
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService()).passwordEncoder(bCryptPasswordEncoder());
     }
 
@@ -40,6 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(Endpoints.CREATE_OWNER_ENDPOINT).permitAll()
+                .antMatchers(Endpoints.OWNER_ENDPOINT + "/**").hasRole("USER")
+                .antMatchers(Endpoints.ANIMAL_ENDPOINT + "/**").hasRole("USER")
+                .antMatchers(Endpoints.VET_ENDPOINT + "/**").hasRole("VET")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()

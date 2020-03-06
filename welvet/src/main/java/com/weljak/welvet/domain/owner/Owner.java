@@ -1,15 +1,14 @@
 package com.weljak.welvet.domain.owner;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.weljak.welvet.domain.vet.VetInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -32,6 +31,10 @@ public class Owner {
 
     @Column(name = "role", nullable = false)
     private String role;
+
+    @OneToMany
+    @JoinColumn(name = "uuid")
+    private List<VetInfo> vetInfo;
 
 //    @ManyToOne(targetEntity = Animal.class)
 //    @JoinColumn(name = "owned_animals")

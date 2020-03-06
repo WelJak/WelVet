@@ -1,7 +1,7 @@
 package com.weljak.welvet.domain.appointment;
 
 import com.weljak.welvet.domain.animal.Animal;
-import com.weljak.welvet.domain.vet.Vet;
+import com.weljak.welvet.domain.owner.Owner;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,9 +25,9 @@ public class Appointment {
     @JoinColumn(name = "animal_id", nullable = false)
     private String animalId;
 
-    @OneToOne(targetEntity = Vet.class, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vet_id", nullable = false)
-    private String vetId;
+    private Owner vetId;
 
     @Column(name = "date", nullable = false)
     private String date;

@@ -20,6 +20,7 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public Animal createAnimal(CreateAnimalRequest createAnimalRequest, Owner owner) {
+        log.info("Creating new animal for user: {}", owner.getUuid());
         if (animalRepo.existsByUuidAndName(owner, createAnimalRequest.getName())) {
             throw new AnimalAlreadyExistsException();
         }
@@ -38,12 +39,14 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public Animal findAnimalById(String id) {
+        log.info("Fetching animal details for animal with id: {}", id);
         return animalRepo.findByAnimalId(id);
     }
 
 
     @Override
     public List<Animal> findAllAnimalsByOwnerUUID(Owner uuid) {
+        log.info("Fetching all animals owned by user: {}", uuid.getUuid());
         return animalRepo.findAllByUuid(uuid);
     }
 }

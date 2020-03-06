@@ -1,8 +1,10 @@
 package com.weljak.welvet.webapi.responses;
 
+import lombok.Builder;
 import lombok.Value;
 
 @Value
+@Builder
 public class FindAnimalResponse {
     private String animalId;
     private String name;
@@ -10,4 +12,5 @@ public class FindAnimalResponse {
     private String breed;
     private Integer age;
     private String treatment;
+    private String owner;
 }

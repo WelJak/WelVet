@@ -38,14 +38,11 @@ public class AnimalController {
                     newAnimal.getBreed(),
                     newAnimal.getAge()
             );
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.success(Endpoints.CREATE_ANIMAL_ENDPOINT, animalResponse, "animal created", HttpStatus.CREATED);
-            return response;
+            return WelVetResponseUtils.success(Endpoints.CREATE_ANIMAL_ENDPOINT, animalResponse, "animal created", HttpStatus.CREATED);
         } catch (AnimalAlreadyExistsException AAEE) {
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.error(Endpoints.CREATE_ANIMAL_ENDPOINT, "AnimalAlreadyExistsException", "Animal with given name and owner currently exists", HttpStatus.BAD_REQUEST);
-            return response;
+            return WelVetResponseUtils.error(Endpoints.CREATE_ANIMAL_ENDPOINT, "AnimalAlreadyExistsException", "Animal with given name and owner currently exists", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.error(Endpoints.CREATE_ANIMAL_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
-            return response;
+            return WelVetResponseUtils.error(Endpoints.CREATE_ANIMAL_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,19 +52,19 @@ public class AnimalController {
             List<Animal> animals = animalService.findAllAnimalsByOwnerUUID(currentOwner.getCurrentOwner());
             List<FindAnimalResponse> animalsResponseList = new ArrayList<>();
             for (Animal animal : animals) {
-                animalsResponseList.add(new FindAnimalResponse(
-                        animal.getAnimalId(),
-                        animal.getName(),
-                        animal.getType(),
-                        animal.getBreed(),
-                        animal.getAge(),
-                        animal.getTreatment()));
+                animalsResponseList.add(FindAnimalResponse.builder()
+                        .age(animal.getAge())
+                        .name(animal.getName())
+                        .type(animal.getType())
+                        .animalId(animal.getAnimalId())
+                        .breed(animal.getBreed())
+                        .treatment(animal.getTreatment())
+                        .owner(currentOwner.getOwnerUUID())
+                        .build());
             }
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.success(Endpoints.GET_CURRENT_OWNER_ALL_ANIMALS, animalsResponseList, String.format("Fetched all owned animals by owner with uuid: %s", currentOwner.getOwnerUUID()), HttpStatus.OK);
-            return response;
+            return WelVetResponseUtils.success(Endpoints.GET_CURRENT_OWNER_ALL_ANIMALS, animalsResponseList, String.format("Fetched all owned animals by owner with uuid: %s", currentOwner.getOwnerUUID()), HttpStatus.OK);
         } catch (Exception e) {
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.error(Endpoints.GET_CURRENT_OWNER_ALL_ANIMALS, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
-            return response;
+            return WelVetResponseUtils.error(Endpoints.GET_CURRENT_OWNER_ALL_ANIMALS, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -76,26 +73,23 @@ public class AnimalController {
         try {
             log.info("Fetching animal details for animal with owner UUID: {} and animal ID: {}", currentOwner.getOwnerUUID(), id);
             Animal animal = animalService.findAnimalById(id);
-            if (!animal.getUuid().equals(currentOwner.getCurrentOwner())) {
-                ResponseEntity<WelVetResponse> response = WelVetResponseUtils.error(Endpoints.GET_ANIMAL_ENDPOINT, "AnimalNotOwnedException", "Animal with given is not owned by user", HttpStatus.FORBIDDEN);
-                return response;
+            if (!animal.getUuid().getUuid().equals(currentOwner.getOwnerUUID())) {
+                return WelVetResponseUtils.error(Endpoints.GET_ANIMAL_ENDPOINT, "AnimalNotOwnedException", "Animal with given is not owned by user", HttpStatus.FORBIDDEN);
             }
-            FindAnimalResponse animalResponse = new FindAnimalResponse(
-                    animal.getAnimalId(),
-                    animal.getName(),
-                    animal.getType(),
-                    animal.getBreed(),
-                    animal.getAge(),
-                    animal.getTreatment()
-            );
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.success(Endpoints.GET_ANIMAL_ENDPOINT, animalResponse, "Fetching animal details", HttpStatus.OK);
-            return response;
+            FindAnimalResponse animalResponse = FindAnimalResponse.builder()
+                    .age(animal.getAge())
+                    .name(animal.getName())
+                    .type(animal.getType())
+                    .animalId(animal.getAnimalId())
+                    .breed(animal.getBreed())
+                    .treatment(animal.getTreatment())
+                    .owner(currentOwner.getOwnerUUID())
+                    .build();
+            return WelVetResponseUtils.success(Endpoints.GET_ANIMAL_ENDPOINT, animalResponse, "Fetching animal details", HttpStatus.OK);
         } catch (NullPointerException NPE) {
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.error(Endpoints.GET_ANIMAL_ENDPOINT, "AnimalNotFoundException", "Animal with given id does not exists", HttpStatus.BAD_REQUEST);
-            return response;
+            return WelVetResponseUtils.error(Endpoints.GET_ANIMAL_ENDPOINT, "AnimalNotFoundException", "Animal with given id does not exists", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            ResponseEntity<WelVetResponse> response = WelVetResponseUtils.error(Endpoints.GET_ANIMAL_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
-            return response;
+            return WelVetResponseUtils.error(Endpoints.GET_ANIMAL_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
