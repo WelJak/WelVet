@@ -39,11 +39,22 @@ type varchar(255) not null,
 primary key(uuid)
 );
 
+create table appointment_request(
+uuid varchar(255) not null,
+animal_id varchar(255) not null,
+type varchar(255) not null,
+preferred_date varchar(255) not null,
+status varchar(255) not null,
+primary key (uuid)
+);
+
 alter table appointment add constraint appointment_animals_uuid_unq foreign key (animal_id) references animals;
 alter table appointment add constraint appointment_vet_uuid_unq foreign key (vet_id) references owner;
+alter table appointment_request add constraint appointment_request_id_unq foreign key (animal_id) references animals;
 
 insert into owner values ('testuuid','testusername','$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC','ROLE_USER');
 insert into animals values ('testanimal1', 'testuuid', 'testname1', 'testtype', 'testbreed', 1,'no treatment atm');
 insert into animals values ('testanimal2', 'testuuid', 'testname2', 'testtype2', 'testbreed2', 13,'no treatment atm');
 insert into owner values ('vetuuid', 'vet', '$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC', 'ROLE_VET');
 insert into vet_info values (1, 'vetuuid', 'surgeon');
+insert into appointment values ('appoid1', 'testanimal1', 'vetuuid', '3-12-2019', 'pending', 'surgery');

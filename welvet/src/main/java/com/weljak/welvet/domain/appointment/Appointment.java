@@ -21,11 +21,11 @@ public class Appointment {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
-    @OneToOne(targetEntity = Animal.class, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "animal_id", nullable = false)
-    private String animalId;
+    private Animal animalId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vet_id", nullable = false)
     private Owner vetId;
 
