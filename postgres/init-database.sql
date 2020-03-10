@@ -33,7 +33,7 @@ create table appointment(
 uuid varchar(255) not null,
 animal_id varchar(255) not null,
 vet_id varchar(255) not null,
-date varchar(255) not null,
+date timestamp not null,
 status varchar(255) not null,
 type varchar(255) not null,
 primary key(uuid)
@@ -43,8 +43,7 @@ create table appointment_request(
 uuid varchar(255) not null,
 animal_id varchar(255) not null,
 type varchar(255) not null,
-preferred_date varchar(255) not null,
-status varchar(255) not null,
+preferred_date timestamp not null,
 primary key (uuid)
 );
 
@@ -57,4 +56,4 @@ insert into animals values ('testanimal1', 'testuuid', 'testname1', 'testtype', 
 insert into animals values ('testanimal2', 'testuuid', 'testname2', 'testtype2', 'testbreed2', 13,'no treatment atm');
 insert into owner values ('vetuuid', 'vet', '$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC', 'ROLE_VET');
 insert into vet_info values (1, 'vetuuid', 'surgeon');
-insert into appointment values ('appoid1', 'testanimal1', 'vetuuid', '3-12-2019', 'pending', 'surgery');
+insert into appointment values ('appoid1', 'testanimal1', 'vetuuid', '12-3-2019 16:00:00', 'PENDING', 'surgery');

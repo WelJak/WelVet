@@ -19,5 +19,17 @@ public class Endpoints {
     public static final String VET_GET_ANIMAL_BY_ID_ENDPOINT = VET_GET_ANIMAL_ENDPOINT + "/{animalId}";
     public static final String VET_CHANGE_ANIMAL_TREATMENT_ENDPOINT = VET_GET_ANIMAL_ENDPOINT + "/treatment";
 
+    private static final String APPOINTMENT_ENDPOINT = "/appointment";
+    public static final String GET_APPOINTMENT_ENDPOINT = APPOINTMENT_ENDPOINT + "/{uuid}";
+    private static final String OWNER_APPOINTMENT_ENDPOINT = OWNER_ENDPOINT + APPOINTMENT_ENDPOINT;
+    public static final String OWNER_CREATE_APPOINTMENT_REQUEST_ENDPOINT = APPOINTMENT_ENDPOINT + "/create";
+    private static final String VET_APPOINTMENT_ENDPOINT = VET_ENDPOINT + APPOINTMENT_ENDPOINT;
+    public static final String VET_GET_ALL_APPOINTMENTS_ENDPOINT = VET_APPOINTMENT_ENDPOINT + "/all";
+    private static final String VET_DELETE_APPOINTMENT_ENDPOINT = VET_APPOINTMENT_ENDPOINT + "/delete";
+    public static final String VET_DELETE_APPOINTMENTS_ENDPOINT = VET_DELETE_APPOINTMENT_ENDPOINT + "/{uuid}";
+
+    private static final String APPOINTMENT_REQUEST_ENDPOINT = APPOINTMENT_ENDPOINT + "/request";
+    public static final String GET_APPOINTMENT_REQUEST_DETAILS_ENDPOINT = APPOINTMENT_REQUEST_ENDPOINT + "/{uuid}";
+
 
 }

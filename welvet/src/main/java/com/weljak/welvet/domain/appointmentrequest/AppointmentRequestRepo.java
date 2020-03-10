@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AppointmentRequestRepo extends JpaRepository<AppointmentRequest, String> {
     AppointmentRequest findByUuid(String uuid);
-    AppointmentRequest findAllByStatus(String status);
 }

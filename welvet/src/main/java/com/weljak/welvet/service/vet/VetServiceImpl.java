@@ -19,26 +19,31 @@ public class VetServiceImpl implements VetService {
 
     @Override
     public Owner findOwnerByUsername(String username) {
+        log.info("Getting details of owner with username: {}", username);
         return ownerRepo.findByUsername(username);
     }
 
     @Override
     public Owner findOwnerByUUID(String uuid) {
+        log.info("Getting details of owner with uuid: {}", uuid);
         return ownerRepo.findByUuid(uuid);
     }
 
     @Override
     public List<Animal> findAllOwnerAnimals(Owner uuid) {
+        log.info("Getting list of animals owned by: {}", uuid.getUuid());
         return animalRepo.findAllByUuid(uuid);
     }
 
     @Override
     public Animal findAnimalById(String animalId) {
+        log.info("Getting details of animal with id: {}", animalId);
         return animalRepo.findByAnimalId(animalId);
     }
 
     @Override
     public Animal changeAnimalTreatment(String animalId, String treatment) {
+        log.info("Changing treatment for animal: {}", animalId);
         Animal animal = animalRepo.findByAnimalId(animalId);
         animal.setTreatment(treatment);
         animalRepo.save(animal);

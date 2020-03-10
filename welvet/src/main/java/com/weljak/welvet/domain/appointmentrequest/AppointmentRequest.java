@@ -1,9 +1,13 @@
 package com.weljak.welvet.domain.appointmentrequest;
 
 import com.weljak.welvet.domain.animal.Animal;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -25,8 +29,6 @@ public class AppointmentRequest {
     private String type;
 
     @Column(name = "preferred_date", nullable = false)
-    private String preferredDate;
+    private LocalDateTime preferredDate;
 
-    @Column(name = "status", nullable = false)
-    private String status;
 }

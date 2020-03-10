@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "appointment")
@@ -30,10 +31,11 @@ public class Appointment {
     private Owner vetId;
 
     @Column(name = "date", nullable = false)
-    private String date;
+    private LocalDateTime date;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
 
     @Column(name = "type", nullable = false)
     private String type;
