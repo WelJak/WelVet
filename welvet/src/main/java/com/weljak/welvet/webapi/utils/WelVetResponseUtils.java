@@ -24,6 +24,10 @@ public class WelVetResponseUtils {
         return new ResponseEntity<>(response, httpStatus);
     }
 
+    public static ResponseEntity<WelVetResponse> noContent() {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     private static WelVetResponse successWelVetResponse(String endpoint, Object any, String message, HttpStatus httpStatus) {
         WelVetResponse response = WelVetResponse.builder()
                 .timeStamp(timeStamp())

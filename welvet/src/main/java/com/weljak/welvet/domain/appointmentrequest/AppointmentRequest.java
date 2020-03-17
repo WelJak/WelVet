@@ -1,6 +1,7 @@
 package com.weljak.welvet.domain.appointmentrequest;
 
 import com.weljak.welvet.domain.animal.Animal;
+import com.weljak.welvet.domain.owner.Owner;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,10 @@ public class AppointmentRequest {
     @ManyToOne
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animalId;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Owner ownerId;
 
     @Column(name = "type", nullable = false)
     private String type;

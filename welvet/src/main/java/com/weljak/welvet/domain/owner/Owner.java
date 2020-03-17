@@ -36,9 +36,4 @@ public class Owner {
     @JoinColumn(name = "uuid")
     private List<VetInfo> vetInfo;
 
-//    @ManyToOne(targetEntity = Animal.class)
-//    @JoinColumn(name = "owned_animals")
-//    //@Column(name = "owned_animals")
-//    private List<Animal> ownedAnimals;
-
 }
