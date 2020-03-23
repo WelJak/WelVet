@@ -21,12 +21,15 @@ public class Endpoints {
 
     private static final String APPOINTMENT_ENDPOINT = "/appointment";
     public static final String GET_APPOINTMENT_ENDPOINT = APPOINTMENT_ENDPOINT + "/{uuid}";
-    private static final String OWNER_APPOINTMENT_ENDPOINT = OWNER_ENDPOINT + APPOINTMENT_ENDPOINT;
-    public static final String OWNER_CREATE_APPOINTMENT_REQUEST_ENDPOINT = APPOINTMENT_ENDPOINT + "/create";
     private static final String VET_APPOINTMENT_ENDPOINT = VET_ENDPOINT + APPOINTMENT_ENDPOINT;
     public static final String VET_GET_ALL_APPOINTMENTS_ENDPOINT = VET_APPOINTMENT_ENDPOINT + "/all";
     private static final String VET_DELETE_APPOINTMENT_ENDPOINT = VET_APPOINTMENT_ENDPOINT + "/delete";
     public static final String VET_DELETE_APPOINTMENTS_ENDPOINT = VET_DELETE_APPOINTMENT_ENDPOINT + "/{uuid}";
+    private static final String VET_MARK_APPOINTMENT_COMPLETION_ENDPOINT = VET_APPOINTMENT_ENDPOINT + "/complete";
+    public static final String VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT = VET_MARK_APPOINTMENT_COMPLETION_ENDPOINT + "/{uuid}";
+    public static final String VET_POSTPONE_APPOINTMENT_ENDPOINT = VET_APPOINTMENT_ENDPOINT + "/postpone";
+    private static final String CANCEL_APPOINTMENT_ENDPOINT = APPOINTMENT_ENDPOINT + "/cancel";
+    public static final String CANCEL_APPOINTMENTS_ENDPOINT = CANCEL_APPOINTMENT_ENDPOINT + "/{uuid}";
 
     private static final String APPOINTMENT_REQUEST_ENDPOINT = APPOINTMENT_ENDPOINT + "/request";
     private static final String OWNER_APPOINTMENT_REQUEST_ENDPOINT = OWNER_ENDPOINT + APPOINTMENT_REQUEST_ENDPOINT;

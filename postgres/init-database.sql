@@ -48,10 +48,17 @@ preferred_date timestamp not null,
 primary key (uuid)
 );
 
+create table appointment_proposition(
+uuid varchar(255) not null,
+request varchar(255) not null,
+new_date timestamp not null 
+);
+
 alter table appointment add constraint appointment_animals_uuid_unq foreign key (animal_id) references animals;
 alter table appointment add constraint appointment_vet_uuid_unq foreign key (vet_id) references owner;
 alter table appointment_request add constraint appointment_request_id_unq foreign key (animal_id) references animals;
 alter table appointment_request add constraint appointment_request_uuid_unq foreign key (owner_id) references owner;
+alter table appointment_proposition add constraint appointment_request_uuid_unq foreign key (request) references appointment_request;
 
 insert into owner values ('testuuid','testusername','$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC','ROLE_USER');
 insert into animals values ('testanimal1', 'testuuid', 'testname1', 'testtype', 'testbreed', 1,'no treatment atm');

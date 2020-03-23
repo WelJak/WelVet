@@ -13,7 +13,7 @@ public class WelVetResponse {
     private String status;
     private Boolean success;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String error = null;
+    private String error;
     private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object payload;

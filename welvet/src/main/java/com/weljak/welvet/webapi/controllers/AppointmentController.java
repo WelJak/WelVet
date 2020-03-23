@@ -1,12 +1,13 @@
 package com.weljak.welvet.webapi.controllers;
 
-import com.weljak.welvet.domain.appointment.Appointment;
+import com.weljak.welvet.domain.appointment.*;
 import com.weljak.welvet.domain.appointmentrequest.AppointmentRequest;
 import com.weljak.welvet.security.CurrentOwner;
 import com.weljak.welvet.service.appointments.appointment.AppointmentService;
 import com.weljak.welvet.service.appointments.appointmentrequest.AppointmentRequestService;
 import com.weljak.welvet.webapi.Endpoints;
 import com.weljak.welvet.webapi.requests.AppointmentRequestCreationForm;
+import com.weljak.welvet.webapi.requests.PostponeAppointmentRequest;
 import com.weljak.welvet.webapi.responses.AppointmentDetailsResponse;
 import com.weljak.welvet.webapi.responses.AppointmentRequestDetailsResponse;
 import com.weljak.welvet.webapi.utils.WelVetResponse;
@@ -33,13 +34,7 @@ public class AppointmentController {
         log.info("Getting appointment request details for request: {}", uuid);
         try {
             AppointmentRequest appointmentRequest = requestService.getRequestByUuid(uuid);
-            AppointmentRequestDetailsResponse response = new AppointmentRequestDetailsResponse(
-                    appointmentRequest.getUuid(),
-                    appointmentRequest.getAnimalId().getAnimalId(),
-                    appointmentRequest.getOwnerId().getUuid(),
-                    appointmentRequest.getType(),
-                    appointmentRequest.getPreferredDate()
-            );
+            AppointmentRequestDetailsResponse response = toAppointmentRequestDetailsResponse(appointmentRequest);
             return WelVetResponseUtils.success(Endpoints.GET_APPOINTMENT_REQUEST_DETAILS_ENDPOINT, response, "Getting appointment request details", HttpStatus.OK);
         } catch (NullPointerException NPE) {
             return WelVetResponseUtils.error(Endpoints.GET_APPOINTMENT_REQUEST_DETAILS_ENDPOINT, "RequestNotFoundException", "Request with given id does not exists", HttpStatus.BAD_REQUEST);
@@ -48,18 +43,47 @@ public class AppointmentController {
         }
     }
 
+    @GetMapping(Endpoints.GET_APPOINTMENT_ENDPOINT)
+    public ResponseEntity<WelVetResponse> getAppointmentDetails(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid) {
+        log.info("Getting appointment details with id: {}", uuid);
+        try {
+            Appointment appointment = appointmentService.getAppointmentByUuid(uuid);
+            AppointmentDetailsResponse response = toAppointmentDetailsResponse(appointment);
+            return WelVetResponseUtils.success(Endpoints.GET_APPOINTMENT_ENDPOINT, response, "Got appointment details", HttpStatus.OK);
+        } catch (NullPointerException npe) {
+            return WelVetResponseUtils.error(Endpoints.GET_APPOINTMENT_ENDPOINT, "AppointmentDoesNotExistsError", "Appointment with given id does not exist", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return WelVetResponseUtils.error(Endpoints.GET_APPOINTMENT_ENDPOINT, "UnknownError", "Unknown Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(Endpoints.VET_GET_ALL_APPOINTMENTS_ENDPOINT)
+    public ResponseEntity<WelVetResponse> getAllAppointmentsDetails(@AuthenticationPrincipal CurrentOwner currentOwner) {
+        try {
+            List<Appointment> appointmentList = appointmentService.getAllAppointments();
+            List<AppointmentDetailsResponse> responseList = toAppointmentDetailsResponseList(appointmentList);
+            return WelVetResponseUtils.success(Endpoints.VET_GET_ALL_APPOINTMENTS_ENDPOINT, responseList, "Fetching all appointments", HttpStatus.OK);
+        } catch (Exception e) {
+            return WelVetResponseUtils.error(Endpoints.VET_GET_ALL_APPOINTMENTS_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(Endpoints.VET_DELETE_APPOINTMENTS_ENDPOINT)
+    public ResponseEntity<WelVetResponse> deleteAppointment(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid) {
+        try {
+            appointmentService.deleteAppointmentByUuid(uuid);
+            return WelVetResponseUtils.noContent();
+        } catch (Exception e) {
+            return WelVetResponseUtils.error(Endpoints.VET_DELETE_APPOINTMENTS_ENDPOINT, "UnknownError", "Unknowne error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(Endpoints.CREATE_APPOINTMENT_REQUEST_ENDPOINT)
     public ResponseEntity<WelVetResponse> createAppointmentRequest(@AuthenticationPrincipal CurrentOwner currentOwner, @RequestBody AppointmentRequestCreationForm requestForm) {
         log.info("Creating new appointment request");
         try {
             AppointmentRequest request = requestService.createAppointmentRequest(requestForm, currentOwner.getCurrentOwner());
-            AppointmentRequestDetailsResponse response = new AppointmentRequestDetailsResponse(
-                    request.getUuid(),
-                    request.getOwnerId().getUuid(),
-                    request.getAnimalId().getAnimalId(),
-                    request.getType(),
-                    request.getPreferredDate()
-            );
+            AppointmentRequestDetailsResponse response = toAppointmentRequestDetailsResponse(request);
             return WelVetResponseUtils.success(Endpoints.CREATE_APPOINTMENT_REQUEST_ENDPOINT, response, "Creating appontment request", HttpStatus.CREATED);
         } catch (Exception e) {
             return WelVetResponseUtils.error(Endpoints.CREATE_APPOINTMENT_REQUEST_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -71,14 +95,7 @@ public class AppointmentController {
         log.info("Confirming appointment request with uuid: {}", uuid);
         try {
             Appointment appointment = requestService.confirmAppointmentRequest(currentOwner.getCurrentOwner(), uuid);
-            AppointmentDetailsResponse response = new AppointmentDetailsResponse(
-                    appointment.getUuid(),
-                    appointment.getAnimalId().getAnimalId(),
-                    appointment.getVetId().getUuid(),
-                    appointment.getDate(),
-                    appointment.getStatus(),
-                    appointment.getType()
-            );
+            AppointmentDetailsResponse response = toAppointmentDetailsResponse(appointment);
             return WelVetResponseUtils.success(Endpoints.CONFIRM_APPOINTMENT_REQUESTS_ENDPOINT, response, "Request confirmed", HttpStatus.CREATED);
         } catch (NullPointerException npe) {
             return WelVetResponseUtils.error(Endpoints.CONFIRM_APPOINTMENT_REQUESTS_ENDPOINT, "RequestDoesNotExistsError", "Request with given id does not exist", HttpStatus.BAD_REQUEST);
@@ -100,8 +117,29 @@ public class AppointmentController {
         }
     }
 
+    @PutMapping(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT)
+    public ResponseEntity<WelVetResponse> cancelAppointment(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid) {
+        log.info("Canceling appointment with id: {}", uuid);
+        try {
+            Appointment cancelledAppointment = appointmentService.changeAppointmentStatus(uuid, AppointmentStatus.CANCELED);
+            AppointmentDetailsResponse response = toAppointmentDetailsResponse(cancelledAppointment);
+            return WelVetResponseUtils.success(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT, response, "Status changed to CANCELED", HttpStatus.CREATED);
+        } catch (AppointmentAlreadyPostponedException aape) {
+            return WelVetResponseUtils.error(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT, "AppointmentAlreadyPostponedError", "Appointment with given id is already postponed", HttpStatus.BAD_REQUEST);
+        } catch (AppointmentAlreadyCancelledException aace) {
+            return WelVetResponseUtils.error(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT, "AppointmentAlreadyCancelledError", "Appointment with given id is already cancelled", HttpStatus.BAD_REQUEST);
+        } catch (AppointmentAlreadyCompletedException aace) {
+            return WelVetResponseUtils.error(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT, "AppointmentAlreadyCompletedError", "Appointment with given id is already completed", HttpStatus.BAD_REQUEST);
+        } catch (NullPointerException npe) {
+            return WelVetResponseUtils.error(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT, "AppointmentNotFoundError", "Appointment with given id does not exist", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return WelVetResponseUtils.error(Endpoints.CANCEL_APPOINTMENTS_ENDPOINT, "UknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping(Endpoints.OWNER_GET_PENDING_APPOINTMENT_REQUESTS_ENDPOINT)
     public ResponseEntity<WelVetResponse> getOwnersPendingRequests(@AuthenticationPrincipal CurrentOwner currentOwner) {
+        log.info("Getting all pending appointment request for user: {}", currentOwner.getOwnerUUID());
         try {
             List<AppointmentRequest> requests = requestService.getOwnersRequests(currentOwner.getCurrentOwner());
             List<AppointmentRequestDetailsResponse> response = appointmentRequestToRequestResponseList(requests);
@@ -113,12 +151,59 @@ public class AppointmentController {
 
     @GetMapping(Endpoints.VET_GET_PENDING_APPOINTMENT_REQUESTS_ENDPOINT)
     public ResponseEntity<WelVetResponse> getAllPendingRequests(@AuthenticationPrincipal CurrentOwner currentOwner) {
+        log.info("Getting all pending appointment requests");
         try {
             List<AppointmentRequest> requests = requestService.getAllRequests();
             List<AppointmentRequestDetailsResponse> response = appointmentRequestToRequestResponseList(requests);
             return WelVetResponseUtils.success(Endpoints.VET_GET_PENDING_APPOINTMENT_REQUESTS_ENDPOINT, response, "Got all pending appointment request", HttpStatus.OK);
         } catch (Exception e) {
             return WelVetResponseUtils.error(Endpoints.VET_GET_PENDING_APPOINTMENT_REQUESTS_ENDPOINT, "UnknownError", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT)
+    public ResponseEntity<WelVetResponse> markAppointmentCompleted(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid) {
+        log.info("Changing appointment status for appointment: {}, status: {}", uuid, AppointmentStatus.COMPLETED);
+        try {
+            Appointment appointment = appointmentService.changeAppointmentStatus(uuid, AppointmentStatus.COMPLETED);
+            AppointmentDetailsResponse response = toAppointmentDetailsResponse(appointment);
+            return WelVetResponseUtils.success(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT, response, "Appointment status changed", HttpStatus.CREATED);
+        } catch (AppointmentAlreadyPostponedException aape) {
+            return WelVetResponseUtils.error(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT, "AppointmentAlreadyPostponedError", "Appointment with given id is already postponed", HttpStatus.BAD_REQUEST);
+        } catch (AppointmentAlreadyCancelledException aace) {
+            return WelVetResponseUtils.error(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT, "AppointmentAlreadyCancelledError", "Appointment with given id is already cancelled", HttpStatus.BAD_REQUEST);
+        } catch (AppointmentAlreadyCompletedException aace) {
+            return WelVetResponseUtils.error(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT, "AppointmentAlreadyCompletedError", "Appointment with given id is already completed", HttpStatus.BAD_REQUEST);
+        } catch (NullPointerException npe) {
+            return WelVetResponseUtils.error(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT, "AppointmentNotFoundError", "Appointment with given id does not exists", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return WelVetResponseUtils.error(Endpoints.VET_MARK_APPOINTMENTS_COMPLETION_ENDPOINT, "UnknownError", "Unknowne error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT)
+    public ResponseEntity<WelVetResponse> postponeAppointment(@AuthenticationPrincipal CurrentOwner currentOwner, @RequestBody PostponeAppointmentRequest postponeRequest) {
+        log.info("Postponing appointment with id: {}", postponeRequest.getUuid());
+        try {
+            Appointment postponedAppointment = appointmentService.changeAppointmentStatus(postponeRequest.getUuid(), AppointmentStatus.POSTPONED);
+            Appointment newAppointment = appointmentService.createAppointment(
+                    postponedAppointment.getAnimalId(),
+                    currentOwner.getCurrentOwner(),
+                    postponeRequest.getDate(),
+                    postponedAppointment.getType()
+            );
+            AppointmentDetailsResponse response = toAppointmentDetailsResponse(newAppointment);
+            return WelVetResponseUtils.success(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT, response, "Appointment postponed", HttpStatus.CREATED);
+        } catch (AppointmentAlreadyPostponedException aape) {
+            return WelVetResponseUtils.error(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT, "AppointmentAlreadyPostponedError", "Appointment with given id is already postponed", HttpStatus.BAD_REQUEST);
+        } catch (AppointmentAlreadyCancelledException aace) {
+            return WelVetResponseUtils.error(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT, "AppointmentAlreadyCancelledError", "Appointment with given id is already cancelled", HttpStatus.BAD_REQUEST);
+        } catch (AppointmentAlreadyCompletedException aace) {
+            return WelVetResponseUtils.error(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT, "AppointmentAlreadyCompletedError", "Appointment with given id is already completed", HttpStatus.BAD_REQUEST);
+        } catch (NullPointerException npe) {
+            return WelVetResponseUtils.error(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT, "AppointmentDoesNotExistError", "Appointment with given id does not exist", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return WelVetResponseUtils.error(Endpoints.VET_POSTPONE_APPOINTMENT_ENDPOINT, "UnknownError", "Unknown Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,5 +219,41 @@ public class AppointmentController {
             ));
         }
         return detailsResponses;
+    }
+
+    private List<AppointmentDetailsResponse> toAppointmentDetailsResponseList(List<Appointment> appointmentList) {
+        List<AppointmentDetailsResponse> detailsResponses = new ArrayList<>();
+        for (Appointment appointment : appointmentList) {
+            detailsResponses.add(new AppointmentDetailsResponse(
+                    appointment.getUuid(),
+                    appointment.getAnimalId().getAnimalId(),
+                    appointment.getVetId().getUuid(),
+                    appointment.getDate(),
+                    appointment.getStatus(),
+                    appointment.getType()
+            ));
+        }
+        return detailsResponses;
+    }
+
+    private AppointmentDetailsResponse toAppointmentDetailsResponse(Appointment appointment) {
+        return new AppointmentDetailsResponse(
+                appointment.getUuid(),
+                appointment.getAnimalId().getAnimalId(),
+                appointment.getVetId().getUuid(),
+                appointment.getDate(),
+                appointment.getStatus(),
+                appointment.getType()
+        );
+    }
+
+    private AppointmentRequestDetailsResponse toAppointmentRequestDetailsResponse(AppointmentRequest appointmentRequest) {
+        return new AppointmentRequestDetailsResponse(
+                appointmentRequest.getUuid(),
+                appointmentRequest.getOwnerId().getUuid(),
+                appointmentRequest.getAnimalId().getAnimalId(),
+                appointmentRequest.getType(),
+                appointmentRequest.getPreferredDate()
+        );
     }
 }
