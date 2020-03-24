@@ -51,6 +51,7 @@ primary key (uuid)
 create table appointment_proposition(
 uuid varchar(255) not null,
 request varchar(255) not null,
+vet varchar(255) not null,
 new_date timestamp not null 
 );
 
@@ -59,6 +60,7 @@ alter table appointment add constraint appointment_vet_uuid_unq foreign key (vet
 alter table appointment_request add constraint appointment_request_id_unq foreign key (animal_id) references animals;
 alter table appointment_request add constraint appointment_request_uuid_unq foreign key (owner_id) references owner;
 alter table appointment_proposition add constraint appointment_request_uuid_unq foreign key (request) references appointment_request;
+alter table appointment_proposition add constraint appointment_vet_uuid_unq foreign key (vet) references owner;
 
 insert into owner values ('testuuid','testusername','$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC','ROLE_USER');
 insert into animals values ('testanimal1', 'testuuid', 'testname1', 'testtype', 'testbreed', 1,'no treatment atm');
@@ -66,3 +68,4 @@ insert into animals values ('testanimal2', 'testuuid', 'testname2', 'testtype2',
 insert into owner values ('vetuuid', 'vet', '$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC', 'ROLE_VET');
 insert into vet_info values (1, 'vetuuid', 'surgeon');
 insert into appointment values ('appoid1', 'testanimal1', 'vetuuid', '12-3-2019 16:00:00', 'PENDING', 'surgery');
+insert into appointment_request values ('reqid1', 'testanimal1', 'testuuid', 'surgery','12-4-2019 16:00:00');

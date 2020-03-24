@@ -1,14 +1,18 @@
 package com.weljak.welvet.webapi.controllers;
 
 import com.weljak.welvet.domain.appointment.*;
+import com.weljak.welvet.domain.appointmentproposition.AppointmentProposition;
 import com.weljak.welvet.domain.appointmentrequest.AppointmentRequest;
 import com.weljak.welvet.security.CurrentOwner;
 import com.weljak.welvet.service.appointments.appointment.AppointmentService;
+import com.weljak.welvet.service.appointments.appointmentproposition.AppointmentPropositionService;
 import com.weljak.welvet.service.appointments.appointmentrequest.AppointmentRequestService;
 import com.weljak.welvet.webapi.Endpoints;
 import com.weljak.welvet.webapi.requests.AppointmentRequestCreationForm;
+import com.weljak.welvet.webapi.requests.CreateAppointmentPropositionRequest;
 import com.weljak.welvet.webapi.requests.PostponeAppointmentRequest;
 import com.weljak.welvet.webapi.responses.AppointmentDetailsResponse;
+import com.weljak.welvet.webapi.responses.AppointmentPropositionDetailsResponse;
 import com.weljak.welvet.webapi.responses.AppointmentRequestDetailsResponse;
 import com.weljak.welvet.webapi.utils.WelVetResponse;
 import com.weljak.welvet.webapi.utils.WelVetResponseUtils;
@@ -28,6 +32,7 @@ import java.util.List;
 public class AppointmentController {
     private final AppointmentService appointmentService;
     private final AppointmentRequestService requestService;
+    private final AppointmentPropositionService propositionService;
 
     @GetMapping(Endpoints.GET_APPOINTMENT_REQUEST_DETAILS_ENDPOINT)
     public ResponseEntity<WelVetResponse> getAppointmentRequestDetails(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid) {
@@ -207,6 +212,62 @@ public class AppointmentController {
         }
     }
 
+    @PostMapping(Endpoints.VET_CREATE_APPOINTMENT_PROPOSITION_ENDPOINT)
+    public ResponseEntity<WelVetResponse> createAppointmentProposition(@AuthenticationPrincipal CurrentOwner currentOwner, @RequestBody CreateAppointmentPropositionRequest appointmentPropositionRequest){
+        log.info("Creating appointment proposition for request with id: {}", appointmentPropositionRequest.getRequestId());
+        try{
+            AppointmentProposition appointmentProposition = propositionService.createAppointmentProposition(
+                    currentOwner.getCurrentOwner(),
+                    appointmentPropositionRequest.getRequestId(),
+                    appointmentPropositionRequest.getNewDate()
+            );
+            AppointmentPropositionDetailsResponse response = toAppointmentPropositionDetailsRepsone(appointmentProposition);
+            return WelVetResponseUtils.success(Endpoints.VET_CREATE_APPOINTMENT_PROPOSITION_ENDPOINT, response, "Created appointment proposition", HttpStatus.CREATED);
+        }catch (Exception e){
+            return WelVetResponseUtils.error(Endpoints.VET_CREATE_APPOINTMENT_PROPOSITION_ENDPOINT, "UnknownError", "Unknwon Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(Endpoints.GET_APPOINTMENT_PROPOSITION_DETAILS_ENDPOINT)
+    public ResponseEntity<WelVetResponse> getAppointmentPropositionDetails(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid){
+        log.info("Getting appointment proposition detials with id: {}", uuid);
+        try {
+            AppointmentPropositionDetailsResponse response = toAppointmentPropositionDetailsRepsone(propositionService.getAppointmentPropositionByUuid(uuid));
+            return WelVetResponseUtils.success(Endpoints.GET_APPOINTMENT_PROPOSITION_DETAILS_ENDPOINT, response, "Fetched appointment proposition details", HttpStatus.OK);
+        }catch (NullPointerException npe){
+            return WelVetResponseUtils.error(Endpoints.GET_APPOINTMENT_PROPOSITION_DETAILS_ENDPOINT, "PropositionDoesNotExistsError", "Appointment proposition with given id does not exists", HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            return WelVetResponseUtils.error(Endpoints.GET_APPOINTMENT_PROPOSITION_DETAILS_ENDPOINT, "UnknownError", "Unknwon Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(Endpoints.VET_DELETE_APPOINTMENT_PROPOSITIONS_ENDPOINT)
+    public ResponseEntity<WelVetResponse> deleteAppointmentProposition(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid){
+        log.info("Deleting appointment proposition with id: {}", uuid);
+        try {
+            propositionService.deleteAppointmentProposition(uuid);
+            return WelVetResponseUtils.noContent();
+        }catch (NullPointerException npe){
+            return WelVetResponseUtils.error(Endpoints.VET_DELETE_APPOINTMENT_PROPOSITIONS_ENDPOINT, "PropositionDoesNotExistsError", "Appointment proposition with given id does not exists", HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            return WelVetResponseUtils.error(Endpoints.VET_DELETE_APPOINTMENT_PROPOSITIONS_ENDPOINT, "UnknownError", "Unknwon Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(Endpoints.OWNER_CONFIRM_APPOINTMENT_PROPOSITIONS_ENDPOINT)
+    public ResponseEntity<WelVetResponse> confirmAppointmentProposition(@AuthenticationPrincipal CurrentOwner currentOwner, @PathVariable String uuid){
+        log.info("Confirming appointment proposition with id: {}", uuid);
+        try{
+            Appointment appointment = propositionService.confirmAppointmentProposition(uuid);
+            AppointmentDetailsResponse response = toAppointmentDetailsResponse(appointment);
+            return WelVetResponseUtils.success(Endpoints.OWNER_CONFIRM_APPOINTMENT_PROPOSITIONS_ENDPOINT, response, "Confirmed appointment proposition", HttpStatus.CREATED);
+        }catch (NullPointerException npe){
+            return WelVetResponseUtils.error(Endpoints.OWNER_CONFIRM_APPOINTMENT_PROPOSITIONS_ENDPOINT, "PropositionDoesNotExistsError", "Appointment proposition with given id does not exists", HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            return WelVetResponseUtils.error(Endpoints.OWNER_CONFIRM_APPOINTMENT_PROPOSITIONS_ENDPOINT, "UnknownError", "Unknwon Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private List<AppointmentRequestDetailsResponse> appointmentRequestToRequestResponseList(List<AppointmentRequest> appointmentRequests) {
         List<AppointmentRequestDetailsResponse> detailsResponses = new ArrayList<>();
         for (AppointmentRequest request : appointmentRequests) {
@@ -254,6 +315,15 @@ public class AppointmentController {
                 appointmentRequest.getAnimalId().getAnimalId(),
                 appointmentRequest.getType(),
                 appointmentRequest.getPreferredDate()
+        );
+    }
+
+    private AppointmentPropositionDetailsResponse toAppointmentPropositionDetailsRepsone(AppointmentProposition appointmentProposition){
+        return  new AppointmentPropositionDetailsResponse(
+                appointmentProposition.getUuid(),
+                appointmentProposition.getRequest().getUuid(),
+                appointmentProposition.getVet().getUuid(),
+                appointmentProposition.getNewDate()
         );
     }
 }

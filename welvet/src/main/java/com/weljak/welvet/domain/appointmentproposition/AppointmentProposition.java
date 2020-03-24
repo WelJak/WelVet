@@ -1,6 +1,7 @@
 package com.weljak.welvet.domain.appointmentproposition;
 
 import com.weljak.welvet.domain.appointmentrequest.AppointmentRequest;
+import com.weljak.welvet.domain.owner.Owner;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,10 @@ public class AppointmentProposition {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "request", nullable = false)
     private AppointmentRequest request;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "vet", nullable = false)
+    private Owner vet;
 
     @Column(name = "new_date", nullable = false)
     private LocalDateTime newDate;
