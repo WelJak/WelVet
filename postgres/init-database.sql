@@ -52,7 +52,16 @@ create table appointment_proposition(
 uuid varchar(255) not null,
 request varchar(255) not null,
 vet varchar(255) not null,
-new_date timestamp not null 
+new_date timestamp not null,
+primary key (uuid) 
+);
+
+create table registration_request(
+uuid varchar(255) not null,
+confirmation_id varchar(255) not null,
+username varchar(255) not null,
+password varchar(255) not null,
+primary key (uuid)
 );
 
 alter table appointment add constraint appointment_animals_uuid_unq foreign key (animal_id) references animals;

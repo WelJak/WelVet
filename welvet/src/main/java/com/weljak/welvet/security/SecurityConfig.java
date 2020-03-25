@@ -39,6 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(Endpoints.CREATE_OWNER_ENDPOINT).permitAll()
+                .antMatchers(Endpoints.CREATE_REGISTRATION_REQUEST_ENDPOINT).permitAll()
+                .antMatchers(Endpoints.CONFIRM_REGISTRATION_REQUEST_ENDPOINT).permitAll()
                 .antMatchers(Endpoints.OWNER_ENDPOINT + "/**").hasRole("USER")
                 .antMatchers(Endpoints.ANIMAL_ENDPOINT + "/**").hasRole("USER")
                 .antMatchers(Endpoints.VET_ENDPOINT + "/**").hasRole("VET")

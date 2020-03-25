@@ -53,5 +53,10 @@ public class Endpoints {
     private static final String VET_DELETE_APPOINTMENT_PROPOSITION_ENDPOINT = VET_APPOINTMENT_PROPOSITION_ENDPOINT + "/delete";
     public static final String VET_DELETE_APPOINTMENT_PROPOSITIONS_ENDPOINT = VET_DELETE_APPOINTMENT_PROPOSITION_ENDPOINT + "/{uuid}";
 
+    private static final String REGISTRATION_REQUEST_ENDPOINT = "/registration-request";
+    public static final String CREATE_REGISTRATION_REQUEST_ENDPOINT = REGISTRATION_REQUEST_ENDPOINT + "/create";
+    private static final String REGISTRATION_REQUESTS_ENDPOINT = REGISTRATION_REQUEST_ENDPOINT + "/{registrationRequestId}";
+    private static final String REGISTRATION_REQUEST_CONFIRMATION_ENDPOINT = REGISTRATION_REQUESTS_ENDPOINT + "/confirmation";
+    public static final String CONFIRM_REGISTRATION_REQUEST_ENDPOINT = REGISTRATION_REQUEST_CONFIRMATION_ENDPOINT + "/{confirmationId}";
 
 }
