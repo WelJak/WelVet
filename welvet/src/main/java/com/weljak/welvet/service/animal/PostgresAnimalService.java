@@ -8,6 +8,8 @@ import com.weljak.welvet.webapi.requests.CreateAnimalRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,10 +17,11 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AnimalServiceImpl implements AnimalService {
+public class PostgresAnimalService implements AnimalService {
     private final AnimalRepo animalRepo;
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Animal createAnimal(CreateAnimalRequest createAnimalRequest, Owner owner) {
         log.info("Creating new animal for user: {}", owner.getUuid());
         if (animalRepo.existsByUuidAndName(owner, createAnimalRequest.getName())) {

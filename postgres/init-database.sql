@@ -7,6 +7,7 @@ UNIQUE (username),
 primary key(uuid)
 );
 
+
 create table animals (
 animal_id varchar(255) not null,
 uuid varchar(255) not null,
@@ -18,15 +19,16 @@ treatment varchar(255),
 primary key(animal_id)
 );
 
+create index animals_owner_uuid on animals(uuid);
 alter table animals add constraint animals_uuid_unq foreign key (uuid) references owner;
 
 create table vet_info (
-id integer not null,
 uuid varchar(255) not null,
 specialization varchar(255) not null,
-primary key(id)
+primary key(uuid)
 );
 
+create index vet_info_uuid on vet_info(uuid);
 alter table vet_info add constraint vet_info_uuid  foreign key (uuid) references owner;
 
 create table appointment(
@@ -75,6 +77,6 @@ insert into owner values ('testuuid','testusername','$2y$12$Bkf3/OoR9cOJSaI3NYqN
 insert into animals values ('testanimal1', 'testuuid', 'testname1', 'testtype', 'testbreed', 1,'no treatment atm');
 insert into animals values ('testanimal2', 'testuuid', 'testname2', 'testtype2', 'testbreed2', 13,'no treatment atm');
 insert into owner values ('vetuuid', 'vet', '$2y$12$Bkf3/OoR9cOJSaI3NYqNjOrmt0KZZOZnk/JByYyF36TAznZNHOgUC', 'ROLE_VET');
-insert into vet_info values (1, 'vetuuid', 'surgeon');
+insert into vet_info values ('vetuuid', 'surgeon');
 insert into appointment values ('appoid1', 'testanimal1', 'vetuuid', '12-3-2019 16:00:00', 'PENDING', 'surgery');
 insert into appointment_request values ('reqid1', 'testanimal1', 'testuuid', 'surgery','12-4-2019 16:00:00');

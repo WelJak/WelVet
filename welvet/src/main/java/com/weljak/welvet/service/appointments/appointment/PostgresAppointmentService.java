@@ -14,7 +14,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AppointmentServiceImpl implements AppointmentService {
+public class PostgresAppointmentService implements AppointmentService {
     private final AppointmentRepo appointmentRepo;
 
     @Override

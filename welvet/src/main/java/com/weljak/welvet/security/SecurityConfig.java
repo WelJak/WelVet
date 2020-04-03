@@ -1,9 +1,8 @@
 package com.weljak.welvet.security;
 
 import com.weljak.welvet.domain.owner.OwnerRepo;
-import com.weljak.welvet.service.owner.OwnerServiceImpl;
+import com.weljak.welvet.service.owner.PostgresOwnerService;
 import com.weljak.welvet.webapi.Endpoints;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,8 +15,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private OwnerRepo ownerRepo;
+
+    private final OwnerRepo ownerRepo;
+
+    public SecurityConfig(OwnerRepo ownerRepo) {
+        this.ownerRepo = ownerRepo;
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -26,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new OwnerServiceImpl(ownerRepo);
+        return new PostgresOwnerService(ownerRepo);
     }
 
     @Override

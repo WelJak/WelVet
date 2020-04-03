@@ -10,15 +10,14 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "vet_info")
+@Table(
+        name = "vet_info",
+        indexes = {@Index(columnList = "uuid", name = "vet_info_uuid")}
+)
 @Data
 @Builder
 public class VetInfo {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @Column(name = "uuid")
     private String uuid;
 

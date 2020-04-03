@@ -12,7 +12,10 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "animals")
+@Table(
+        name = "animals",
+        indexes = {@Index(columnList = "uuid", name = "animals_owner_uuid")}
+)
 @Builder
 @Data
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

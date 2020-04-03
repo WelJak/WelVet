@@ -1,7 +1,6 @@
 package com.weljak.welvet.webapi.controllers;
 
 import com.weljak.welvet.domain.owner.Owner;
-import com.weljak.welvet.domain.owner.OwnerAlreadyExistsException;
 import com.weljak.welvet.security.CurrentOwner;
 import com.weljak.welvet.service.owner.OwnerService;
 import com.weljak.welvet.webapi.Endpoints;
@@ -29,29 +28,20 @@ public class OwnerController {
 
     @PostMapping(Endpoints.CREATE_OWNER_ENDPOINT)
     public ResponseEntity<WelVetResponse> createOwner(@RequestBody CreateOwnerRequest ownerRequest) {
-        try {
-            log.info("Creating new user with request username:{}, password: {}", ownerRequest.getUsername(), ownerRequest.getPassword());
-            Owner newOwner = ownerService.createOwner(ownerRequest.getUsername(), bCryptPasswordEncoder.encode(ownerRequest.getPassword()));
-            return WelVetResponseUtils.success(Endpoints.CREATE_OWNER_ENDPOINT, newOwner, "Owner created", HttpStatus.CREATED);
-        } catch (OwnerAlreadyExistsException OAEE) {
-            log.info("Create user request rejected. Reason: Username is not available");
-            return WelVetResponseUtils.error(Endpoints.CREATE_OWNER_ENDPOINT, "OwnerAlreadyExistsException", "User with this username already exists", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return WelVetResponseUtils.error(Endpoints.CREATE_OWNER_ENDPOINT, "UnknownException", "Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        log.info("Creating new user with request username:{}, password: {}", ownerRequest.getUsername(), ownerRequest.getPassword());
+        Owner newOwner = ownerService.createOwner(ownerRequest.getUsername(), bCryptPasswordEncoder.encode(ownerRequest.getPassword()));
+        return WelVetResponseUtils.success(Endpoints.CREATE_OWNER_ENDPOINT, newOwner, "Owner created", HttpStatus.CREATED);
 
     }
 
     @GetMapping(Endpoints.CURRENT_OWNER_DETAILS_ENDPOINT)
     public ResponseEntity<WelVetResponse> getCurrentOwnerDetails(@AuthenticationPrincipal CurrentOwner currentOwner) {
-        try {
-            log.info("Getting account details for user with uuid: {}", currentOwner.getOwnerUUID());
-            Owner owner = ownerService.findOwnerByUuid(currentOwner.getOwnerUUID());
-            CurrentOwnerDetailsResponse currentOwnerDetailsResponse = new CurrentOwnerDetailsResponse(owner.getUuid(), owner.getUsername(), owner.getRole());
-            return WelVetResponseUtils.success(Endpoints.CURRENT_OWNER_DETAILS_ENDPOINT, currentOwnerDetailsResponse, String.format("found owner with uuid: %s", currentOwner.getOwnerUUID()), HttpStatus.OK);
-        } catch (NullPointerException NPE) {
-            return WelVetResponseUtils.error(Endpoints.CURRENT_OWNER_DETAILS_ENDPOINT, "UserDoesNotExists", "User with this username does not exists", HttpStatus.BAD_REQUEST);
-        }
+        log.info("Getting account details for user with uuid: {}", currentOwner.getOwnerUUID());
+        Owner owner = ownerService.findOwnerByUuid(currentOwner.getOwnerUUID());
+        CurrentOwnerDetailsResponse currentOwnerDetailsResponse = new CurrentOwnerDetailsResponse(owner.getUuid(), owner.getUsername(), owner.getRole());
+        return WelVetResponseUtils.success(Endpoints.CURRENT_OWNER_DETAILS_ENDPOINT, currentOwnerDetailsResponse, String.format("found owner with uuid: %s", currentOwner.getOwnerUUID()), HttpStatus.OK);
+
     }
 
 

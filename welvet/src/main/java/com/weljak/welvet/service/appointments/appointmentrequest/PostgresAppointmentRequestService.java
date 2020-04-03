@@ -19,7 +19,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AppointmentRequestServiceImpl implements AppointmentRequestService {
+public class PostgresAppointmentRequestService implements AppointmentRequestService {
     private final AppointmentRequestRepo appointmentRequestRepo;
     private final AppointmentService appointmentService;
     private final AnimalRepo animalRepo;

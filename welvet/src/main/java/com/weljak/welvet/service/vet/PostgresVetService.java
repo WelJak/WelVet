@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VetServiceImpl implements VetService {
+public class PostgresVetService implements VetService {
     private final OwnerRepo ownerRepo;
     private final AnimalRepo animalRepo;
 

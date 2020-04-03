@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class WelVetResponse {
     private String timeStamp;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String path;
     private int responseCode;
     private String status;

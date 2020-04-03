@@ -29,7 +29,7 @@ public class WelVetResponseUtils {
     }
 
     private static WelVetResponse successWelVetResponse(String endpoint, Object any, String message, HttpStatus httpStatus) {
-        WelVetResponse response = WelVetResponse.builder()
+        return WelVetResponse.builder()
                 .timeStamp(timeStamp())
                 .path(endpoint)
                 .responseCode(httpStatus.value())
@@ -38,11 +38,10 @@ public class WelVetResponseUtils {
                 .success(true)
                 .status(httpStatus.getReasonPhrase())
                 .build();
-        return response;
     }
 
-    private static WelVetResponse errorWelVetResponse(String endpoint, String error, String message, HttpStatus httpStatus) {
-        WelVetResponse response = WelVetResponse.builder()
+    public static WelVetResponse errorWelVetResponse(String endpoint, String error, String message, HttpStatus httpStatus) {
+        return WelVetResponse.builder()
                 .timeStamp(timeStamp())
                 .path(endpoint)
                 .responseCode(httpStatus.value())
@@ -51,7 +50,6 @@ public class WelVetResponseUtils {
                 .message(message)
                 .error(error)
                 .build();
-        return response;
     }
 
     private static String timeStamp() {

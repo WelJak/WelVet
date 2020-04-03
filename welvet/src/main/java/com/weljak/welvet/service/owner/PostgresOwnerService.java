@@ -10,16 +10,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OwnerServiceImpl implements OwnerService, UserDetailsService {
+public class PostgresOwnerService implements OwnerService, UserDetailsService {
     private final OwnerRepo ownerRepo;
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Owner createOwner(String username, String password) {
         log.info("creating owner with request username: {} and password: {}", username, password);
         if (ownerRepo.existsByUsername(username)) {

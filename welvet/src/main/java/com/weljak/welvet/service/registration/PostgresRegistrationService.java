@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RegistrationServiceImpl implements RegistrationService {
+public class PostgresRegistrationService implements RegistrationService {
     private final RegistrationRequestRepo registrationRequestRepo;
     private final OwnerRepo ownerRepo;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
